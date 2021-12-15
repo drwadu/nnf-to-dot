@@ -26,6 +26,11 @@ dot nc (node, id)
   | head node == 'O' = reverse ["\n\tNode_" ++ show id ++ " [label=O]", edges nc node id]
   | otherwise = []
 
+dotWIthMappings :: Show a => Integer -> ([Char], a) -> [[Char]]
+dotWIthMappings = undefined 
+
+countingGraph = undefined 
+
 edges :: Show a => Integer -> [Char] -> a -> [Char]
 edges n node id
   | head node == 'A' =

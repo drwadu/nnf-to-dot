@@ -1,3 +1,7 @@
 *.hi
 *.o
 nnftd
+*.cnf
+*.cnf.nnf
+*.svg
+*.png
