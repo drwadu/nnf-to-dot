@@ -10,7 +10,7 @@ main = do
   let nc = readInt $ words (head nnf) !! 1
   let body = dotBody nc nnf
   let nnfStack = stack nnf
-  print $ map (evalCount nnfStack) nnfStack
+  -- print $ map (evalCount nnfStack) nnfStack
   putStr "digraph nnftd  {"
   mapM_ putStr body
   putStrLn "\n}"
