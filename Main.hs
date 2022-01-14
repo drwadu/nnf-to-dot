@@ -1,6 +1,7 @@
 module Main where
 
-import Data.Maybe
+import Data.List (find)
+import Data.Maybe (fromJust, mapMaybe)
 import System.Environment (getArgs)
 import Text.Read (readMaybe)
 
@@ -10,8 +11,8 @@ main = do
   contents <- readFile file
   let nnf = lines contents
   let nc = readInt $ words (head nnf) !! 1
-  let body = dotBody nc nnf
-
+  let mappings = mapMaybe mapping nnf
+  let body = dotBody nc mappings (filter (\x -> head (words x) /= "c") nnf)
   putStr "digraph nnftd  {"
   mapM_ putStr body
   putStrLn "\n}"
@@ -25,13 +26,25 @@ readInt = read :: String -> Integer
 readMaybeInt :: String -> Maybe Integer
 readMaybeInt = readMaybe :: String -> Maybe Integer
 
-dot :: Show a => Integer -> ([Char], a) -> [[Char]]
-dot nc (node, id)
+mapping :: String -> Maybe (Integer, String)
+mapping xs =
+  let ys = words xs
+   in if head ys == "c"
+        then Just (readInt $ last ys, head $ tail ys)
+        else Nothing
+
+label :: Integer -> [(Integer, String)] -> String
+label i xs =
+  let y = find (\x -> fst x == abs i) xs
+   in if i > 0 then maybe (show i) snd y else maybe (show i) ("¬" ++ snd y)
+
+dot :: Show a => Integer -> [(Integer, String)] -> ([Char], a) -> [[Char]]
+dot nc xs (node, id)
   | head node == 'L' =
     [ "\n\tNode_"
         ++ show id
         ++ " [label="
-        ++ show (readInt . last . words $ node)
+        ++ label (readInt . last . words $ node) xs
         ++ "]"
     ]
   | head node `elem` ['A', 'O'] =
@@ -60,9 +73,9 @@ dot nc (node, id)
   | otherwise =
     [ "\n\tNode_" ++ show id
         ++ " [label=\""
-        ++ show (fromJust . readMaybeInt . head . words $ node)
+        ++ label (fromJust . readMaybeInt . head . words $ node) xs
         ++ " ↦ "
-        ++ show (fromJust . readMaybeInt . last . words $ node)
+        ++ label (fromJust . readMaybeInt . last . words $ node) xs
         ++ "\"]"
     ]
 
@@ -86,5 +99,5 @@ edges n node id
       (drop 2 $ words node)
   | otherwise = error "invalid file."
 
-dotBody :: Integer -> [[Char]] -> [[Char]]
-dotBody nc nnf = reverse $ concatMap (dot nc) $ toNodes nnf
+dotBody :: Integer -> [(Integer, String)] -> [[Char]] -> [[Char]]
+dotBody nc xs nnf = reverse $ concatMap (dot nc xs) $ toNodes nnf
