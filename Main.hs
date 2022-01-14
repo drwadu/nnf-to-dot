@@ -25,11 +25,11 @@ dot nc (node, id)
   | head node == 'L' = ["\n\tNode_" ++ show id ++ " [label=" ++ show (readInt . last . words $ node) ++ "]"]
   | head node == '1' = ["\n\tNode_" ++ show id ++ " [label=" ++ show (readInt . last . words $ node) ++ "]"]
   | head node == '0' = ["\n\tNode_" ++ show id ++ " [label=" ++ show (readInt . last . words $ node) ++ "]"]
-  | head node == 'A' = reverse ["\n\tNode_" ++ show id ++ " [label=A]", edges nc node id]
-  | head node == 'O' = reverse ["\n\tNode_" ++ show id ++ " [label=O]", edges nc node id]
-  | head node == '*' = reverse ["\n\tNode_" ++ show id ++ " [label=\"*\"]", edges nc node id]
-  | head node == '+' = reverse ["\n\tNode_" ++ show id ++ " [label=\"+\"]", edges nc node id]
-  -- | head node `elem` ['A', 'O', '+', '*'] = reverse ["\n\tNode_" ++ show id ++ " [label=" ++ show (head node) ++ "]", edges nc node id]
+  | head node == 'A' = reverse ["\n\tNode_" ++ show id ++ " [label=A shape=box]", edges nc node id]
+  | head node == 'O' = reverse ["\n\tNode_" ++ show id ++ " [label=O shape=box]", edges nc node id]
+  | head node == '*' = reverse ["\n\tNode_" ++ show id ++ " [label=\"*\" shape=box]", edges nc node id]
+  | head node == '+' = reverse ["\n\tNode_" ++ show id ++ " [label=\"+\" shape=box]", edges nc node id]
+  -- head node `elem` ['A', 'O', '+', '*'] = reverse ["\n\tNode_" ++ show id ++ " [label=" ++ show (head node) ++ "]", edges nc node id]
   | otherwise = error "invalid file."
 
 edges :: Show a => Integer -> [Char] -> a -> [Char]
