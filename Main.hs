@@ -1,6 +1,8 @@
 module Main where
 
+import Data.Maybe
 import System.Environment (getArgs)
+import Text.Read (readMaybe)
 
 main :: IO ()
 main = do
@@ -20,17 +22,49 @@ toNodes dag = reverse $ zip (reverse $ tail dag) [1 ..]
 readInt :: String -> Integer
 readInt = read :: String -> Integer
 
+readMaybeInt :: String -> Maybe Integer
+readMaybeInt = readMaybe :: String -> Maybe Integer
+
 dot :: Show a => Integer -> ([Char], a) -> [[Char]]
 dot nc (node, id)
-  | head node == 'L' = ["\n\tNode_" ++ show id ++ " [label=" ++ show (readInt . last . words $ node) ++ "]"]
-  | head node == '1' = ["\n\tNode_" ++ show id ++ " [label=" ++ show (readInt . last . words $ node) ++ "]"]
-  | head node == '0' = ["\n\tNode_" ++ show id ++ " [label=" ++ show (readInt . last . words $ node) ++ "]"]
-  | head node == 'A' = reverse ["\n\tNode_" ++ show id ++ " [label=A shape=box]", edges nc node id]
-  | head node == 'O' = reverse ["\n\tNode_" ++ show id ++ " [label=O shape=box]", edges nc node id]
-  | head node == '*' = reverse ["\n\tNode_" ++ show id ++ " [label=\"*\" shape=box]", edges nc node id]
-  | head node == '+' = reverse ["\n\tNode_" ++ show id ++ " [label=\"+\" shape=box]", edges nc node id]
-  -- head node `elem` ['A', 'O', '+', '*'] = reverse ["\n\tNode_" ++ show id ++ " [label=" ++ show (head node) ++ "]", edges nc node id]
-  | otherwise = error "invalid file."
+  | head node == 'L' =
+    [ "\n\tNode_"
+        ++ show id
+        ++ " [label="
+        ++ show (readInt . last . words $ node)
+        ++ "]"
+    ]
+  | head node `elem` ['A', 'O'] =
+    reverse
+      [ "\n\tNode_"
+          ++ show id
+          ++ " [label="
+          ++ show (head . words $ node)
+          ++ " shape=box]",
+        edges nc node id
+      ]
+  | head node == '*' =
+    reverse
+      [ "\n\tNode_" ++ show id ++ " [label=\"* ↦ "
+          ++ show (readInt . last . words $ node)
+          ++ "\" shape=box]",
+        edges nc node id
+      ]
+  | head node == '+' =
+    reverse
+      [ "\n\tNode_" ++ show id ++ " [label=\"+ ↦ "
+          ++ show (readInt . last . words $ node)
+          ++ "\" shape=box]",
+        edges nc node id
+      ]
+  | otherwise =
+    [ "\n\tNode_" ++ show id
+        ++ " [label=\""
+        ++ show (fromJust . readMaybeInt . head . words $ node)
+        ++ " ↦ "
+        ++ show (fromJust . readMaybeInt . last . words $ node)
+        ++ "\"]"
+    ]
 
 edges :: Show a => Integer -> [Char] -> a -> [Char]
 edges n node id
