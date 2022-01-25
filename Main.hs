@@ -1,7 +1,7 @@
 module Main where
 
 import Data.List (find)
-import Data.Maybe (fromJust, mapMaybe)
+import Data.Maybe (fromJust, isJust, mapMaybe)
 import System.Environment (getArgs)
 import Text.Read (readMaybe)
 
@@ -33,10 +33,15 @@ mapping xs =
         then Just (readInt $ last ys, head $ tail ys)
         else Nothing
 
+negation :: (a, String) -> String
+negation = (++) "¬" . snd
+
 label :: Integer -> [(Integer, String)] -> String
 label i xs =
   let y = find (\x -> fst x == abs i) xs
-   in if i > 0 then maybe (show i) snd y else maybe (show i) ("¬" ++ snd y)
+   in if i > 0
+        then maybe (show i) snd y
+        else maybe (show i) negation y
 
 dot :: Show a => Integer -> [(Integer, String)] -> ([Char], a) -> [[Char]]
 dot nc xs (node, id)
@@ -79,6 +84,7 @@ dot nc xs (node, id)
         ++ "\"]"
     ]
 
+-- without last if not L
 edges :: Show a => Integer -> [Char] -> a -> [Char]
 edges n node id
   | head node == 'A' =
@@ -92,11 +98,11 @@ edges n node id
   | head node == '*' =
     concatMap
       ((++) "\n" . ((++) (concat ["\tNode_", show id, " -> Node_"]) . show . abs . (-) n . readInt))
-      (drop 2 $ words node)
+      (drop 2 $ init $ words node)
   | head node == '+' =
     concatMap
       ((++) "\n" . ((++) (concat ["\tNode_", show id, " -> Node_"]) . show . abs . (-) n . readInt))
-      (drop 2 $ words node)
+      (drop 2 $ init $ words node)
   | otherwise = error "invalid file."
 
 dotBody :: Integer -> [(Integer, String)] -> [[Char]] -> [[Char]]
