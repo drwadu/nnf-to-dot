@@ -11,12 +11,12 @@ $ nnftd example.nnf | dot -Tpng > example_nnf.png
 ![nnf](example_nnf.png)
 ## counting graph 
 ```command
-$ nnftd example.cg | dot -Tpng > graph.png
+$ nnftd example.cg | dot -Tpng > example_cg.png
 ```
 ![cg](example_cg.png)
 
 ## answer set counting graph 
 ```command
-$ nnftd example.cg | dot -Tpng > graph.png
+$ nnftd example.acg | dot -Tpng > example_acg.png
 ```
 ![acg](example_acg.png)
