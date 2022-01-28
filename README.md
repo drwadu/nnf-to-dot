@@ -1,5 +1,5 @@
 # nnf-to-dot (nnftd)
-![8queens-acg](8_queens_acgstd.png)
+![8queens-ccg](8_queens_std_ccg.png)
 
 transforms (answer set) counting graph of nnf or nnf file to .dot file
 

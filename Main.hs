@@ -61,18 +61,28 @@ dot nc xs (node, id)
           ++ " shape=box]",
         edges nc node id
       ]
+  -- head node == '*' =
+  --  reverse
+  --    [ "\n\tNode_" ++ show id ++ " [label=\"* ↦ "
+  --        ++ show (readInt . last . words $ node)
+  --        ++ "\" shape=box]",
+  --      edges nc node id
+  --    ]
   | head node == '*' =
     reverse
-      [ "\n\tNode_" ++ show id ++ " [label=\"* ↦ "
-          ++ show (readInt . last . words $ node)
-          ++ "\" shape=box]",
+      [ "\n\tNode_" ++ show id ++ " [label=\"*" ++ "\" shape=box]",
         edges nc node id
       ]
+  -- head node == '+' =
+  -- reverse
+  --   [ "\n\tNode_" ++ show id ++ " [label=\"+ ↦ "
+  --       ++ show (readInt . last . words $ node)
+  --       ++ "\" shape=box]",
+  --     edges nc node id
+  --   ]
   | head node == '+' =
     reverse
-      [ "\n\tNode_" ++ show id ++ " [label=\"+ ↦ "
-          ++ show (readInt . last . words $ node)
-          ++ "\" shape=box]",
+      [ "\n\tNode_" ++ show id ++ " [label=\"+" ++ "\" shape=box]",
         edges nc node id
       ]
   | otherwise =
@@ -85,6 +95,7 @@ dot nc xs (node, id)
     ]
 
 -- without last if not L
+-- not without last if not L
 edges :: Show a => Integer -> [Char] -> a -> [Char]
 edges n node id
   | head node == 'A' =
@@ -95,14 +106,22 @@ edges n node id
     concatMap
       ((++) "\n" . ((++) (concat ["\tNode_", show id, " -> Node_"]) . show . abs . (-) n . readInt))
       (drop 3 $ words node)
+  -- head node == '*' =
+  --  concatMap
+  --    ((++) "\n" . ((++) (concat ["\tNode_", show id, " -> Node_"]) . show . abs . (-) n . readInt))
+  --    (drop 2 $ init $ words node)
   | head node == '*' =
     concatMap
       ((++) "\n" . ((++) (concat ["\tNode_", show id, " -> Node_"]) . show . abs . (-) n . readInt))
-      (drop 2 $ init $ words node)
+      (drop 2 $ words node)
+  -- head node == '+' =
+  --  concatMap
+  --    ((++) "\n" . ((++) (concat ["\tNode_", show id, " -> Node_"]) . show . abs . (-) n . readInt))
+  --    (drop 2 $ init $ words node)
   | head node == '+' =
     concatMap
       ((++) "\n" . ((++) (concat ["\tNode_", show id, " -> Node_"]) . show . abs . (-) n . readInt))
-      (drop 2 $ init $ words node)
+      (drop 2 $ words node)
   | otherwise = error "invalid file."
 
 dotBody :: Integer -> [(Integer, String)] -> [[Char]] -> [[Char]]
