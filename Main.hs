@@ -40,8 +40,8 @@ label :: Integer -> [(Integer, String)] -> String
 label i xs =
   let y = find (\x -> fst x == abs i) xs
    in if i > 0
-        then maybe (show i) snd y
-        else maybe (show i) negation y
+        then maybe ("x_" ++ show i) snd y
+        else maybe ((++) "¬x_" . show $ abs i) negation y
 
 dot :: Show a => Integer -> [(Integer, String)] -> ([Char], a) -> [[Char]]
 dot nc xs (node, id)
@@ -52,12 +52,28 @@ dot nc xs (node, id)
         ++ label (readInt . last . words $ node) xs
         ++ "]"
     ]
-  | head node `elem` ['A', 'O'] =
+  -- head node `elem` ['A', 'O'] =
+  -- reverse
+  --   [ "\n\tNode_"
+  --       ++ show id
+  --       ++ " [label="
+  --       ++ show (head . words $ node)
+  --       ++ " shape=box]",
+  --     edges nc node id
+  --   ]
+  | head node == 'A' =
     reverse
       [ "\n\tNode_"
           ++ show id
-          ++ " [label="
-          ++ show (head . words $ node)
+          ++ " [label=∧"
+          ++ " shape=box]",
+        edges nc node id
+      ]
+  | head node == 'O' =
+    reverse
+      [ "\n\tNode_"
+          ++ show id
+          ++ " [label=∨"
           ++ " shape=box]",
         edges nc node id
       ]
