@@ -2,10 +2,23 @@
 # nnf2dot
 Converts NNF or counting graph to graphviz input.
 
-# Usage 
+# Build 
 ```console
-$ nnf2dot file | dot -Tpng > file.png
+nnf2dot$ ghc -o nnf2dot Main.hs
 ```
+# Usage 
+nnf2dot can be used on NNFs amd counting graphs in formats accepted by [iascar](https://github.com/drwadu/iascar).
+## NNF
+```console
+nnf2dot$ ./nnf2dot examples/example.nnf | dot -Tpng > nnf_example.png
+```
+![](examples/nnf_example.png)
+## Counting Graph
+```console
+nnf2dot$ ./nnf2dot examples/example.ccg | dot -Tpng > ccg_example.png
+```
+![](examples/ccg_example.png)
+
 
 # Customize Style
 To customize node styles, go to [Main.hs](Main.hs) and change either of 
