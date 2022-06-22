@@ -7,7 +7,7 @@ Converts NNF or counting graph to graphviz input.
 nnf2dot$ ghc -o nnf2dot Main.hs
 ```
 # Usage 
-nnf2dot can be used on NNFs amd counting graphs in formats accepted by [iascar](https://github.com/drwadu/iascar).
+nnf2dot can be used on NNFs and counting graphs in formats accepted by [iascar](https://github.com/drwadu/iascar).
 ## NNF
 ```console
 nnf2dot$ ./nnf2dot examples/example.nnf | dot -Tpng > nnf_example.png
