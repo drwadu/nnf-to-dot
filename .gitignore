@@ -5,3 +5,5 @@ nnftd
 *.cnf.nnf
 *.svg
 misc
+misc_
+nnf2dot

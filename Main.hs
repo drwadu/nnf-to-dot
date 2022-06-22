@@ -30,7 +30,7 @@ mapping :: String -> Maybe (Integer, String)
 mapping xs =
   let ys = words xs
    in if head ys == "c"
-        then Just (readInt $ last ys, head $ tail ys)
+        then Just (readInt $ head $ tail ys, last $ tail ys)
         else Nothing
 
 negation :: (a, String) -> String
@@ -40,8 +40,8 @@ label :: Integer -> [(Integer, String)] -> String
 label i xs =
   let y = find (\x -> fst x == abs i) xs
    in if i > 0
-        then maybe ("x_" ++ show i) snd y
-        else maybe ((++) "¬x_" . show $ abs i) negation y
+        then maybe ("<x<SUB>" ++ show i ++ "</SUB>>") snd y
+        else maybe (((++) "<¬x<SUB>" . show $ abs i) ++ "</SUB>>") negation y
 
 dot :: Show a => Integer -> [(Integer, String)] -> ([Char], a) -> [[Char]]
 dot nc xs (node, id)
@@ -52,21 +52,12 @@ dot nc xs (node, id)
         ++ label (readInt . last . words $ node) xs
         ++ "]"
     ]
-  -- head node `elem` ['A', 'O'] =
-  -- reverse
-  --   [ "\n\tNode_"
-  --       ++ show id
-  --       ++ " [label="
-  --       ++ show (head . words $ node)
-  --       ++ " shape=box]",
-  --     edges nc node id
-  --   ]
   | head node == 'A' =
     reverse
       [ "\n\tNode_"
           ++ show id
           ++ " [label=∧"
-          ++ " shape=box]",
+          ++ " shape=box width=0.5]",
         edges nc node id
       ]
   | head node == 'O' =
@@ -74,71 +65,32 @@ dot nc xs (node, id)
       [ "\n\tNode_"
           ++ show id
           ++ " [label=∨"
-          ++ " shape=box]",
+          ++ " shape=box width=0.5]",
         edges nc node id
       ]
-  -- head node == '*' =
-  --  reverse
-  --    [ "\n\tNode_" ++ show id ++ " [label=\"* ↦ "
-  --        ++ show (readInt . last . words $ node)
-  --        ++ "\" shape=box]",
-  --      edges nc node id
-  --    ]
   | head node == '*' =
     reverse
-      [ "\n\tNode_" ++ show id ++ " [label=\"*" ++ "\" shape=box]",
+      [ "\n\tNode_" ++ show id ++ " [label=\"✕\" shape=box fillcolor=yellow style=filled fontcolor=blue fontsize=20 width=0.5]",
         edges nc node id
       ]
-  -- head node == '+' =
-  -- reverse
-  --   [ "\n\tNode_" ++ show id ++ " [label=\"+ ↦ "
-  --       ++ show (readInt . last . words $ node)
-  --       ++ "\" shape=box]",
-  --     edges nc node id
-  --   ]
   | head node == '+' =
     reverse
-      [ "\n\tNode_" ++ show id ++ " [label=\"+" ++ "\" shape=box]",
+      [ "\n\tNode_" ++ show id ++ " [label=\"＋\" shape=box fillcolor=blue style=filled fontcolor=yellow fontsize=16 width=0.5]",
         edges nc node id
       ]
   | otherwise =
     [ "\n\tNode_" ++ show id
         ++ " [label=\""
-        ++ label (fromJust . readMaybeInt . head . words $ node) xs
-        ++ " ↦ "
-        ++ label (fromJust . readMaybeInt . last . words $ node) xs
-        ++ "\"]"
+        ++ label (fromJust . readMaybeInt . head . words $ node) xs ++ "\"]"
     ]
 
--- without last if not L
--- not without last if not L
+convertEdge n id = ((++) "\n" . ((++) (concat ["\tNode_", show id, " -> Node_"]) . show . abs . (-) n . readInt))
+
 edges :: Show a => Integer -> [Char] -> a -> [Char]
 edges n node id
-  | head node == 'A' =
-    concatMap
-      ((++) "\n" . ((++) (concat ["\tNode_", show id, " -> Node_"]) . show . abs . (-) n . readInt))
-      (drop 2 $ words node)
-  | head node == 'O' =
-    concatMap
-      ((++) "\n" . ((++) (concat ["\tNode_", show id, " -> Node_"]) . show . abs . (-) n . readInt))
-      (drop 3 $ words node)
-  -- head node == '*' =
-  --  concatMap
-  --    ((++) "\n" . ((++) (concat ["\tNode_", show id, " -> Node_"]) . show . abs . (-) n . readInt))
-  --    (drop 2 $ init $ words node)
-  | head node == '*' =
-    concatMap
-      ((++) "\n" . ((++) (concat ["\tNode_", show id, " -> Node_"]) . show . abs . (-) n . readInt))
-      (drop 2 $ words node)
-  -- head node == '+' =
-  --  concatMap
-  --    ((++) "\n" . ((++) (concat ["\tNode_", show id, " -> Node_"]) . show . abs . (-) n . readInt))
-  --    (drop 2 $ init $ words node)
-  | head node == '+' =
-    concatMap
-      ((++) "\n" . ((++) (concat ["\tNode_", show id, " -> Node_"]) . show . abs . (-) n . readInt))
-      (drop 2 $ words node)
-  | otherwise = error "invalid file."
+  | head node `elem` "A*+" = concatMap (convertEdge n id) (drop 2 $ words node)
+  | head node == 'O' = concatMap (convertEdge n id) (drop 3 $ words node) 
+  | otherwise = error "invalid input."
 
 dotBody :: Integer -> [(Integer, String)] -> [[Char]] -> [[Char]]
 dotBody nc xs nnf = reverse $ concatMap (dot nc xs) $ toNodes nnf
