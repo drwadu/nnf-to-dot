@@ -5,6 +5,12 @@ import Data.Maybe (fromJust, isJust, mapMaybe)
 import System.Environment (getArgs)
 import Text.Read (readMaybe)
 
+
+andNodeStyle   = "[label=∧ shape=box width=0.5]"
+orNodSetyle    = "[label=∨ shape=box width=0.5]"
+plusNodeStyle  = "[label=\"+\" shape=box fontsize=16 width=0.5]"
+timesNodeStyle = "[label=\"✕\" shape=box fontsize=20 width=0.5]"
+
 main :: IO ()
 main = do
   (file : _) <- getArgs
@@ -13,7 +19,7 @@ main = do
   let nc = readInt $ words (head nnf) !! 1
   let mappings = mapMaybe mapping nnf
   let body = dotBody nc mappings (filter (\x -> head (words x) /= "c") nnf)
-  putStr "digraph nnftd  {"
+  putStr "digraph nnf2dot  {\n\tedge[arrowhead=none];"
   mapM_ putStr body
   putStrLn "\n}"
 
@@ -53,29 +59,13 @@ dot nc xs (node, id)
         ++ "]"
     ]
   | head node == 'A' =
-    reverse
-      [ "\n\tNode_"
-          ++ show id
-          ++ " [label=∧ shape=box width=0.5]",
-        edges nc node id
-      ]
+    reverse ["\n\tNode_" ++ show id ++ " " ++ andNodeStyle, edges nc node id]
   | head node == 'O' =
-    reverse
-      [ "\n\tNode_"
-          ++ show id
-          ++ " [label=∨ shape=box width=0.5]",
-        edges nc node id
-      ]
+    reverse ["\n\tNode_" ++ show id ++ " " ++ orNodSetyle, edges nc node id]
   | head node == '*' =
-    reverse
-      [ "\n\tNode_" ++ show id ++ " [label=\"✕\" shape=box fontsize=20 width=0.5]",
-        edges nc node id
-      ]
+    reverse ["\n\tNode_" ++ show id ++ " " ++ timesNodeStyle, edges nc node id]
   | head node == '+' =
-    reverse
-      [ "\n\tNode_" ++ show id ++ " [label=\"+\" shape=box fontsize=16 width=0.5]",
-        edges nc node id
-      ]
+    reverse ["\n\tNode_" ++ show id ++ " " ++ plusNodeStyle, edges nc node id]
   | otherwise =
     [ "\n\tNode_" ++ show id
         ++ " [label=\""
