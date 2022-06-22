@@ -56,26 +56,24 @@ dot nc xs (node, id)
     reverse
       [ "\n\tNode_"
           ++ show id
-          ++ " [label=∧"
-          ++ " shape=box width=0.5]",
+          ++ " [label=∧ shape=box width=0.5]",
         edges nc node id
       ]
   | head node == 'O' =
     reverse
       [ "\n\tNode_"
           ++ show id
-          ++ " [label=∨"
-          ++ " shape=box width=0.5]",
+          ++ " [label=∨ shape=box width=0.5]",
         edges nc node id
       ]
   | head node == '*' =
     reverse
-      [ "\n\tNode_" ++ show id ++ " [label=\"✕\" shape=box fillcolor=yellow style=filled fontcolor=blue fontsize=20 width=0.5]",
+      [ "\n\tNode_" ++ show id ++ " [label=\"✕\" shape=box fontsize=20 width=0.5]",
         edges nc node id
       ]
   | head node == '+' =
     reverse
-      [ "\n\tNode_" ++ show id ++ " [label=\"＋\" shape=box fillcolor=blue style=filled fontcolor=yellow fontsize=16 width=0.5]",
+      [ "\n\tNode_" ++ show id ++ " [label=\"+\" shape=box fontsize=16 width=0.5]",
         edges nc node id
       ]
   | otherwise =
@@ -84,7 +82,8 @@ dot nc xs (node, id)
         ++ label (fromJust . readMaybeInt . head . words $ node) xs ++ "\"]"
     ]
 
-convertEdge n id = ((++) "\n" . ((++) (concat ["\tNode_", show id, " -> Node_"]) . show . abs . (-) n . readInt))
+convertEdge n id = 
+  (++) "\n" . ((++) (concat ["\tNode_", show id, " -> Node_"]) . show . abs . (-) n . readInt)
 
 edges :: Show a => Integer -> [Char] -> a -> [Char]
 edges n node id
